@@ -1,0 +1,24 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[margin=0.6in,bottom=+0.05in]{geometry}
+\usepackage{cite}
+
+% \addtolength{\topmargin}{-.2in}
+\title{CS6700 Project - Learning tic-tac-toe rules}
+\author{Midhul Varma Vuppalapati (mvv25), Abhishek Vijaya Kumar (av565)}
+\date{March 2021}
+
+\begin{document}
+
+\maketitle
+The goal of this project is to make an agent learn the rules of the tic-tac-toe game. Every game has a fixed set of rules which need to be followed by the players to regulate the gameplay. Tic-tac-toe is a simple two player game which is played on a board of squares, typically 3x3. Each player is assigned a shape (typically O or X) and they take turns playing the game. The goal of each player is to fill an entire row, column or a diagonal with their shape. Each player follows the following rules
+\begin{itemize}
+    \item A player can enter only the shape assigned to her on a square of the grid.
+    \item A player can enter her shape only on an empty square of the grid.
+    \item A player can enter fill only one square in the grid in each turn.
+\end{itemize}
+
+Computer programs have been successfully trained to play tic-tac-toe previously using Q learning, Q DNN learning, Alpha Zero etc. All of these approaches rely on taining the program the pick the most optimal move from a given set of valid next board states. The goal of our project is to explore if it is possible to encode the rules in the training process itself. In other words, we want to experiment and evaluate if computer programs can pick the most optimal move in a tic-tac-toe game from the set of all possible next board states instead of only the valid ones.
+
+Expound on approaches - Supervised learning, Reinforcement learning and one shot classification. 
+
+\end{document}
