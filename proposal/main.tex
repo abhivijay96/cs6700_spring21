@@ -4,21 +4,76 @@
 
 % \addtolength{\topmargin}{-.2in}
 \title{CS6700 Project - Learning tic-tac-toe rules}
-\author{Midhul Varma Vuppalapati (mvv25), Abhishek Vijaya Kumar (av565)}
+\author{Midhul Vuppalapati (mvv25), Abhishek Vijaya Kumar (av565)}
 \date{March 2021}
 
 \begin{document}
 
 \maketitle
-The goal of this project is to make an agent learn the rules of the tic-tac-toe game. Every game has a fixed set of rules which need to be followed by the players to regulate the gameplay. Tic-tac-toe is a simple two player game which is played on a board of squares, typically 3x3. Each player is assigned a shape (typically O or X) and they take turns playing the game. The goal of each player is to fill an entire row, column or a diagonal with their shape. Each player follows the following rules
+AI techniques have had great success in learning to play games and even surpassing human-level performance in several of them. Most of these techniques, however, assume that the AI already knows the rules of the game to start with (they are encoded within the models that are used to the train the AI). Our goal in this project is to take a step back and explore the following fundamental question: \textit{Is it possible for an AI to learn the rules of a game from scratch? and if so, what does it take to achieve this?}. As a first step towards answering this question, we consider the simple game of tic-tac-toe (potentially with varying board size to increase the complexity of the game). Tic-tac-toe is a simple two player game which is played on a board of squares, typically 3x3. Each player is assigned a shape (typically O or X) and they take turns playing the game. The goal of each player is to fill an entire row, column or a diagonal with their shape. 
+
+To even begin answering this question, we must first define a state space of possible actions that an agent can take. The \textit{rules} of the game then define which subset of these possible actions are legal moves given the current state of the game. For our setting, we define the following state space of possible actions: \textit{In any given move, and agent can select any subset of cells in the grid, and fill those cells with either an X or an O}.
+
+Given the above state space of possible actions, we would like our AI to learn the following concrete rules:
 \begin{itemize}
-    \item A player can enter only the shape assigned to her on a square of the grid.
-    \item A player can enter her shape only on an empty square of the grid.
-    \item A player can enter fill only one square in the grid in each turn.
+    \item A player can enter only the shape assigned to her on a square of the grid (symbols must alternate every move).
+    \item A player can enter her shape only on an empty square of the grid. (cannot overwrite already filled squares)
+    \item A player can enter fill exactly one square in the grid in each turn.
 \end{itemize}
 
-Computer programs have been successfully trained to play tic-tac-toe previously using Q learning, Q DNN learning, Alpha Zero etc. All of these approaches rely on taining the program the pick the most optimal move from a given set of valid next board states. The goal of our project is to explore if it is possible to encode the rules in the training process itself. In other words, we want to experiment and evaluate if computer programs can pick the most optimal move in a tic-tac-toe game from the set of all possible next board states instead of only the valid ones.
+Note that the above state space definition is the one we plan to start with. However, we intend to adapt this along the way based on our observations. For example, we could expand the state space to allow selection from a larger set of possible symbols, and require the agent to learn the rule that it can only use Xs and Os.
 
-Expound on approaches - Supervised learning, Reinforcement learning and one shot classification. 
+% The goal of this project is to make an agent learn the rules of the tic-tac-toe game. Every game has a fixed set of rules which need to be followed by the players to regulate the gameplay. Tic-tac-toe is a simple two player game which is played on a board of squares, typically 3x3. Each player is assigned a shape (typically O or X) and they take turns playing the game. The goal of each player is to fill an entire row, column or a diagonal with their shape. 
+
+
+% Computer programs have been successfully trained to play tic-tac-toe previously using Q learning, Q DNN learning, Alpha Zero etc. All of these approaches rely on taining the program the pick the most optimal move from a given set of valid next board states. The goal of our project is to explore if it is possible to encode the rules in the training process itself. In other words, we want to experiment and evaluate if computer programs can pick the most optimal move in a tic-tac-toe game from the set of all possible next board states instead of only the valid ones.
+
+We plan to explore the following three approaches in increasing order of ambition. We also describe the evaluation plan for each inline:
+
+\begin{itemize}
+    \item \textbf{Approach A: Learn by explicit examples (supervised learning)}: We first consider the most naive approach to getting an AI to learn the required rules (in order to establish a baseline). We model the problem as an instance of supervised classification. Given as input \textit{[current state of the game board, action]}, the goal of the classifier is to output whether this is a leagal move \footnote{Assuming that the game always starts with given symbol (say X), it is possible to determine the set of legal moves by just looking at the current state of the game board}. We plan to train (1) a simple neural network and (2) an SVM using randomly synthesized training data.
+    
+    \textbf{Evaluation plan}
+    \begin{itemize}
+        \item \textit{Approach}: Initially we split the input examples into a training set and a test set, and evaluate the trained model against the test set.
+        \item \textit{Metrics}: Accuracy of the resulting classifier, precisions, recall
+        \item \textit{Sensitivity analysis}: 
+        \begin{itemize}
+            \item Vary the number of training examples
+            \item Vary board size
+        \end{itemize}
+         
+    \end{itemize}
+    
+    \item \textbf{Approach B: Learn by playing the game (reinforcement learning)}: We make an agent that does not know the rules of game play the augmented game against an agent that does know the rules, and see if it is able to learn the rules in the process. For this we plan to piggyback on existing RL techniques used for games: (1) Q-learning and (2) Deep Q-learning (using existing implementations available in the OpenSpiel framework). We will use an augmented version of the game, where the agent "looses" the game if it makes any invalid/illegal move, and "wins" the game only if it makes all valid moves until the end.
+    
+    \textbf{Evaluation plan}
+    \begin{itemize}
+        \item \textit{Approach}: Make the resulting agent play games against the following: (1) Random agent that knows the rules (2) Q-agent (2) Deep Q-agent (3) Optimal agent (minimax)
+        \item \textit{Metrics}: Fraction of games won/drawn.
+        \item \textit{Sensitivity analysis}:
+        \begin{itemize}
+            \item Vary number of games played
+        \end{itemize}
+    \end{itemize}
+    
+    \item \textbf{Approach C: Learn by watching}: In the final approach, we ask the question: \textit{Is it possible for an AI to learn the rules of the game just by watching it being played (without any additional feedback)}. Here, we model the problem as one of \textit{One-class classification}, where the goal is to learn to classify given only training examples from one class. We plan to use the same specification of input and outputs for the classifier as in Approach A. However, this time the training examples will consist of only positive examples (legal moves). We plan to use One-class SVMs as the model.
+    
+    \textbf{Evaluation plan}
+
+    Same as Approach A.
+\end{itemize} 
+
+
+Given the limited timeframe of the course project, we will focus mainly on Apporaches A and B, exploring Approach C if time permits. Below is a rough timeline of how we plan to execute the project (we plan to parallelize work on Approach A and B among the two of us):
+\begin{itemize}
+    \item \textit{[week 1]} Implement Approach A $\vert$ Implement Approach B
+    \item \textit{[week 2]} Evaluate Apporach A $\vert$ Evaluate Approach B
+    \item \textit{[week 3]} Evaluate Apporach A $\vert$ Evaluate Approach B
+    \item \textit{[week 4]} Buffer period / experiment with Approach C 
+    \item \textit{[week 5]} Buffer period / experiment with Approach C 
+    \item \textit{[week 6]} Writing Report 
+\end{itemize}
+ 
 
 \end{document}
