@@ -24,7 +24,7 @@ void generate_positive_points(game* current_game, int shape)
             if(current_game->is_game_over())
             {
                 // current_game->print_states_of_game();
-                // current_game->print_data_points();
+                current_game->print_data_points();
                 ++wins;
                 if(wins % print_interlval == 0)
                 {
@@ -53,15 +53,23 @@ void log(string text)
 
 int main(int argc, char* argv[])
 { 
-    game* new_game = new game(3);
+    int board_size;
+    if(argc < 2)
+    {
+        cout << "Usage: ./generate <board_size>" << endl;
+        return 1;
+    }
+    board_size = atoi(argv[1]);
+    // log("Generating game with " + std::to_string(board_size) + "x" + std::to_string(board_size));
+    game* new_game = new game(board_size);
     generate_positive_points(new_game, SHAPE_X);
-    log("Total wins: " + std::to_string(wins));
-    log("Total draws: " + std::to_string(draws));
-    log("Total games: " + std::to_string(draws + wins));
+    // log("Total wins: " + std::to_string(wins));
+    // log("Total draws: " + std::to_string(draws));
+    // log("Total games: " + std::to_string(draws + wins));
     draws = 0;
     wins = 0;
     generate_positive_points(new_game, SHAPE_O);
-    log("Total wins: " + std::to_string(wins));
-    log("Total draws: " + std::to_string(draws));
-    log("Total games: " + std::to_string(draws + wins));
+    // log("Total wins: " + std::to_string(wins));
+    // log("Total draws: " + std::to_string(draws));
+    // log("Total games: " + std::to_string(draws + wins));
 }
