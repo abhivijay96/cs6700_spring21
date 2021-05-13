@@ -4,7 +4,6 @@
 
 using namespace std;
 
-int print_interlval = 10000;
 int wins = 0;
 int draws = 0;
 
@@ -26,10 +25,6 @@ void generate_positive_points(game* current_game, int shape)
                 // current_game->print_states_of_game();
                 current_game->print_data_points();
                 ++wins;
-                if(wins % print_interlval == 0)
-                {
-                    // cout << "Total wins: " << std::to_string(wins) << endl;
-                }
             }
             else if(!current_game->is_board_full())
             {
