@@ -5,8 +5,8 @@
 
 using namespace std;
 
-#define SHAPE_O 1
-#define SHAPE_X 0
+#define SHAPE_O -1
+#define SHAPE_X 1
 
 class game
 {
