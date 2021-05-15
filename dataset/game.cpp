@@ -31,7 +31,7 @@ int* game::init_next_board_state()
     {
         if(this->states.size() == 0)
         {
-            state[idx] = -1;
+            state[idx] = 0;
         }
         else
         {
@@ -177,9 +177,10 @@ bool game::is_board_full()
 
     for(idx = 0; idx < this->total_elems; ++idx)
     {
-        if(state[idx] == -1)
+        if(state[idx] == 0)
         {
             result = false;
+            break;
         }
     }
     
