@@ -4,10 +4,11 @@ from tensorflow.keras import layers
 from tensorflow.keras.models import save_model, load_model
 import json
 import os
+import pickle
 
 positive_examples = []
 neagative_examples = []
-fraction_data_for_train = 0.01
+fraction_data_for_train = 0.001
 
 positive_type = 1
 negative_type = 2
@@ -81,10 +82,19 @@ def gen_data_points(json_path, txt_path, point_type):
         else:
             neagative_examples = data
 
+def get_pkl_examples(filename):
+    with open(filename, 'rb') as f:
+        examples = pickle.load(f)
+        return examples
+
 print('loading positive data points')
 gen_data_points(positive_json_path, positive_txt_path, positive_type)
 print('loading negative data points')
 gen_data_points(negative_json_path, negative_txt_path, negative_type)
+# neagative_examples = []
+# neagative_examples.extend(get_pkl_examples('../dataset/wrong_symbol.pkl'))
+# neagative_examples.extend(get_pkl_examples('../dataset/overwrite.pkl'))
+# neagative_examples.extend(get_pkl_examples('../dataset/many_moves.pkl'))
 
 training_samples = []
 training_labels = []
@@ -94,6 +104,8 @@ validation_labels = []
 
 random.shuffle(positive_examples)
 random.shuffle(neagative_examples)
+
+
 
 training_set_size = fraction_data_for_train * len(positive_examples)
 print('Training set size: ', training_set_size)
@@ -105,8 +117,10 @@ print('Validation set size: ', validation_set_size)
 popoulate_samples(validation_set_size, validation_samples, validation_labels)
 assert len(validation_samples) == int(validation_set_size)
 
-game_model = tf.keras.Sequential([layers.Dense(18, activation='relu'), layers.Dense(1, activation='sigmoid')]) # change this to modify the number of layers
+game_model = tf.keras.Sequential(
+    [layers.Dense(18, activation='relu'),
+    layers.Dense(1, activation='sigmoid')]) # change this to modify the number of layers
 game_model.compile(loss='binary_crossentropy', optimizer = tf.optimizers.Adam(), metrics=['accuracy'])
 
-game_model.fit(training_samples, training_labels, epochs=100, validation_data=(validation_samples, validation_labels))
+game_model.fit(training_samples, training_labels, epochs=250, validation_data=(validation_samples, validation_labels))
 save_model(game_model, 'model')

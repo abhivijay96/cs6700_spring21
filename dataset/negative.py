@@ -11,9 +11,9 @@ def is_valid_move(current_state, next_state):
     new_count = 0
 
     for idx in range(len(current_parts)):
-        if current_parts[idx] == '-1' and next_parts[idx] != '-1':
+        if current_parts[idx] == '0' and next_parts[idx] != '0':
             new_count += 1
-        elif current_parts[idx] != '-1' and next_parts[idx] != current_parts[idx]:
+        elif current_parts[idx] != '0' and next_parts[idx] != current_parts[idx]:
             # print('idx', idx, 'curr', current_parts[idx], 'next', next_parts[idx])
             changed_count += 1
     return changed_count == 0 and new_count == 1

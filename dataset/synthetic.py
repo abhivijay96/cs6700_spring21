@@ -1,4 +1,5 @@
 import random
+import pickle
     
 def gen_wrong_symbol(cur_state):
     entries = str(cur_state).split(',')
@@ -13,7 +14,7 @@ def gen_wrong_symbol(cur_state):
     pos = random.choice(empty_positions)
     new_state = entries[:]
     new_state[pos] = new_entry
-    return ','.join(new_state)
+    return new_state
 
 
 def gen_overwrite(cur_state):
@@ -31,16 +32,16 @@ def gen_overwrite(cur_state):
     pos = random.choice(filled_positions)
     new_state = entries[:]
     new_state[pos] = new_entry
-    return ','.join(new_state)
+    return new_state
 
 
 def gen_many_moves(cur_state):
     entries = str(cur_state).split(',')
     empty_positions = [i for i in range(len(entries)) if entries[i] == '0']
-    if(len(empty_positions) == 0):
+    if(len(empty_positions) < 2):
         return None
 
-    positions = random.sample(empty_positions, random.choice(range(1, len(empty_positions) + 1)))
+    positions = random.sample(empty_positions, random.choice(range(2, len(empty_positions) + 1)))
 
     num_xs = len([x for x in entries if x == '1'])
     num_os = len([x for x in entries if x == '-1'])
@@ -50,27 +51,39 @@ def gen_many_moves(cur_state):
     for pos in positions:
         new_state[pos] = new_entry
     
-    return ','.join(new_state)
+    return new_state
 
 def gen_examples(inp_file, out_file, gen_func):
-    outf = open(out_file, 'w')
+    examples = []
     with open(inp_file, 'r') as file_handle:
         line = file_handle.readline()
+        count  = 0
         while line:
             line = line.strip()
             parts = line.split('|')
             current_valid_state = parts[0]
+            cur_state = current_valid_state.split(',')
             # print(current_valid_state)
             new_state = gen_func(current_valid_state)
             if new_state == None:
+                line = file_handle.readline()
                 continue
-            outf.write(current_valid_state + '|' + new_state + '\n')
+            example = cur_state + new_state
+            examples.append([int(a) for a in example])
+            count += 1
+            if(count % 100000 == 0):
+                print(count)
+            # outf.write(current_valid_state + '|' + new_state + '\n')
             line = file_handle.readline()
     
-    outf.close()
+    with open(out_file, 'wb') as f:
+        pickle.dump(examples, f)
 
 random.seed(1996)
 
-gen_examples('positive.txt', 'wrong_symbol.txt', gen_wrong_symbol)
-gen_examples('positive.txt', 'overwrite.txt', gen_overwrite)
-gen_examples('positive.txt', 'many_moves.txt', gen_many_moves)
+gen_examples('positive.txt', 'wrong_symbol.pkl', gen_wrong_symbol)
+print('done')
+gen_examples('positive.txt', 'overwrite.pkl', gen_overwrite)
+print('done')
+gen_examples('positive.txt', 'many_moves.pkl', gen_many_moves)
+print('done')
