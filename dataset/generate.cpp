@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     // log("Total games: " + std::to_string(draws + wins));
     draws = 0;
     wins = 0;
-    generate_positive_points(new_game, SHAPE_O);
+    // generate_positive_points(new_game, SHAPE_O);
     // log("Total wins: " + std::to_string(wins));
     // log("Total draws: " + std::to_string(draws));
     // log("Total games: " + std::to_string(draws + wins));

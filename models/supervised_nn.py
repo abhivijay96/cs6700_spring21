@@ -1,12 +1,13 @@
 import random
 import tensorflow as tf
 from tensorflow.keras import layers
+from tensorflow.keras.models import save_model, load_model
 import json
 import os
 
 positive_examples = []
 neagative_examples = []
-fraction_data_for_train = 0.6
+fraction_data_for_train = 0.01
 
 positive_type = 1
 negative_type = 2
@@ -91,6 +92,9 @@ training_labels = []
 validation_samples = []
 validation_labels = []
 
+random.shuffle(positive_examples)
+random.shuffle(neagative_examples)
+
 training_set_size = fraction_data_for_train * len(positive_examples)
 print('Training set size: ', training_set_size)
 popoulate_samples(training_set_size, training_samples, training_labels)
@@ -101,7 +105,8 @@ print('Validation set size: ', validation_set_size)
 popoulate_samples(validation_set_size, validation_samples, validation_labels)
 assert len(validation_samples) == int(validation_set_size)
 
-game_model = tf.keras.Sequential([layers.Dense(18), layers.Dense(1)]) # change this to modify the number of layers
-game_model.compile(loss = tf.losses.MeanSquaredError(), optimizer = tf.optimizers.Adam())
+game_model = tf.keras.Sequential([layers.Dense(18, activation='relu'), layers.Dense(1, activation='sigmoid')]) # change this to modify the number of layers
+game_model.compile(loss='binary_crossentropy', optimizer = tf.optimizers.Adam(), metrics=['accuracy'])
 
-game_model.fit(training_samples, training_labels, epochs=10)
+game_model.fit(training_samples, training_labels, epochs=100, validation_data=(validation_samples, validation_labels))
+save_model(game_model, 'model')
