@@ -6,9 +6,11 @@ import json
 import os
 import pickle
 
+tf.random.set_seed(1996)
+
 positive_examples = []
 neagative_examples = []
-fraction_data_for_train = 0.001
+fraction_data_for_train = 1
 
 positive_type = 1
 negative_type = 2

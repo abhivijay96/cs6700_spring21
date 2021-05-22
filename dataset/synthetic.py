@@ -53,7 +53,7 @@ def gen_many_moves(cur_state):
     
     return new_state
 
-def gen_examples(inp_file, out_file, gen_func):
+def gen_examples(inp_file, out_file, gen_func, duplication):
     examples = []
     with open(inp_file, 'r') as file_handle:
         line = file_handle.readline()
@@ -64,15 +64,16 @@ def gen_examples(inp_file, out_file, gen_func):
             current_valid_state = parts[0]
             cur_state = current_valid_state.split(',')
             # print(current_valid_state)
-            new_state = gen_func(current_valid_state)
-            if new_state == None:
-                line = file_handle.readline()
-                continue
-            example = cur_state + new_state
-            examples.append([int(a) for a in example])
-            count += 1
-            if(count % 100000 == 0):
-                print(count)
+            for i in range(duplication):
+                new_state = gen_func(current_valid_state)
+                if new_state == None:
+                    continue
+                example = cur_state + new_state
+                examples.append([int(a) for a in example])
+                count += 1
+                if(count % 100000 == 0):
+                    print(count)
+            
             # outf.write(current_valid_state + '|' + new_state + '\n')
             line = file_handle.readline()
     
@@ -81,9 +82,9 @@ def gen_examples(inp_file, out_file, gen_func):
 
 random.seed(1996)
 
-gen_examples('positive.txt', 'wrong_symbol.pkl', gen_wrong_symbol)
+gen_examples('positive.txt', 'wrong_symbol.pkl', gen_wrong_symbol, 3)
 print('done')
-gen_examples('positive.txt', 'overwrite.pkl', gen_overwrite)
+gen_examples('positive.txt', 'overwrite.pkl', gen_overwrite, 3)
 print('done')
-gen_examples('positive.txt', 'many_moves.pkl', gen_many_moves)
+gen_examples('positive.txt', 'many_moves.pkl', gen_many_moves, 5)
 print('done')
