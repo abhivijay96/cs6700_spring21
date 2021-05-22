@@ -34,6 +34,7 @@ void generate_positive_points(game* current_game, int shape)
             }
             else
             {
+                current_game->print_data_points();
                 draws += 1;
             }
         }

@@ -38,6 +38,13 @@ int* game::init_next_board_state()
             state[idx] = (this->states.back())[idx];
         }
     }
+    if(this->states.size() == 0)
+    {
+        // adding this to print it 
+        int* begin_state = new int[this->total_elems];
+        for(idx = 0; idx < this->total_elems; ++idx) { begin_state[idx] = 0;}
+        this->states.push_back(begin_state);
+    }
     this->states.push_back(state);
     return state;
 }
