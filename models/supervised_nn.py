@@ -1,16 +1,31 @@
 import random
 import tensorflow as tf
 from tensorflow.keras import layers
-from tensorflow.keras.models import save_model, load_model
+from tensorflow.keras.models import save_model
 import json
-import os
+import sys
 import pickle
 
 tf.random.set_seed(1996)
 
+if len(sys.argv) < 5:
+    print('Invalid argument count', len(sys.argv))
+    exit(0)
+
+fraction_positive_data = float(sys.argv[1])
+fractin_negative_data = float(sys.argv[2])
+neuron_count = int(sys.argv[3])
+layer_count = int(sys.argv[4])
+model_name = sys.argv[5]
+
+print('Positive fraction passed', fraction_positive_data)
+print('Negative fraction passed', fractin_negative_data)
+print('Neuron count passed', neuron_count)
+print('Layer count passed', layer_count)
+print('Model name passed', model_name)
+
 positive_examples = []
 neagative_examples = []
-fraction_data_for_train = 1
 
 positive_type = 1
 negative_type = 2
@@ -23,8 +38,6 @@ negative_idx = 0
 
 positive_txt_path = '../dataset/positive.txt'
 negative_txt_path = '../dataset/negative.txt'
-positive_json_path = 'positive.json'
-negative_json_path = 'negative.json'
 
 def convert_string_to_list(board_state):
     result = []
@@ -47,20 +60,23 @@ def populate_data_points(file_name, target):
             target.append(current_state)
             line = file_handle.readline()
 
-def popoulate_samples(size, samples, labels):
+def popoulate_samples(positive_size, negative_size, samples, labels):
     global negative_idx
     global positive_idx
-    for _ in range(0, int(size)):
-        point_type = random.choice([negative_type, positive_type])
-        
-        if point_type == positive_type:
-            samples.append(positive_examples[positive_idx])
-            labels.append(positive_label)
-            positive_idx += 1
 
-        if point_type == negative_type:
+    for _ in range(0, positive_size):
+        labels.append(positive_label)
+    for _ in range(0, negative_size):
+        labels.append(negative_label)
+    
+    random.shuffle(labels)
+
+    for label in labels:
+        if label == positive_label:
+            samples.append(positive_examples[positive_idx])
+            positive_idx += 1
+        if label == negative_label:
             samples.append(neagative_examples[negative_idx])
-            labels.append(negative_label)
             negative_idx += 1
 
 def store_json(target, file_name):
@@ -68,21 +84,21 @@ def store_json(target, file_name):
         file_handle.write(json.dumps(target))
         file_handle.flush()
 
-def gen_data_points(json_path, txt_path, point_type):
+def gen_data_points(txt_path, point_type):
     global positive_examples
     global neagative_examples
     examples = positive_examples if point_type == positive_type else neagative_examples
-    if not os.path.exists(json_path):
-        populate_data_points(txt_path, examples)
-        store_json(examples, json_path)
-    else:
-        data = None
-        with open(json_path, 'r') as json_file:
-            data = json.loads(json_file.read())
-        if point_type == positive_type:
-            positive_examples = data
-        else:
-            neagative_examples = data
+    # if not os.path.exists(json_path):
+    populate_data_points(txt_path, examples)
+    # store_json(examples, json_path)
+    # else:
+    #     data = None
+    #     with open(json_path, 'r') as json_file:
+    #         data = json.loads(json_file.read())
+    #     if point_type == positive_type:
+    #         positive_examples = data
+    #     else:
+    #         neagative_examples = data
 
 def get_pkl_examples(filename):
     with open(filename, 'rb') as f:
@@ -90,9 +106,9 @@ def get_pkl_examples(filename):
         return examples
 
 print('loading positive data points')
-gen_data_points(positive_json_path, positive_txt_path, positive_type)
+gen_data_points(positive_txt_path, positive_type)
 print('loading negative data points')
-gen_data_points(negative_json_path, negative_txt_path, negative_type)
+gen_data_points(negative_txt_path, negative_type)
 # neagative_examples = []
 # neagative_examples.extend(get_pkl_examples('../dataset/wrong_symbol.pkl'))
 # neagative_examples.extend(get_pkl_examples('../dataset/overwrite.pkl'))
@@ -108,21 +124,34 @@ random.shuffle(positive_examples)
 random.shuffle(neagative_examples)
 
 
+positive_size = fraction_positive_data * len(positive_examples)
+negative_size = fraction_positive_data * len(positive_examples)
+print('Positive train set size:', positive_size)
+print('Negative train set size:', negative_size)
 
-training_set_size = fraction_data_for_train * len(positive_examples)
+training_set_size = positive_size + negative_size
 print('Training set size: ', training_set_size)
-popoulate_samples(training_set_size, training_samples, training_labels)
+popoulate_samples(positive_size, negative_size, training_samples, training_labels)
 assert len(training_samples) == int(training_set_size)
 
 validation_set_size = training_set_size / 10
+pos_validation_set_size = validation_set_size / 2
+neg_validation_set_size = pos_validation_set_size
 print('Validation set size: ', validation_set_size)
-popoulate_samples(validation_set_size, validation_samples, validation_labels)
-assert len(validation_samples) == int(validation_set_size)
+print('Positive val set size:', pos_validation_set_size)
+print('Negative val set size:', neg_validation_set_size)
 
-game_model = tf.keras.Sequential(
-    [layers.Dense(18, activation='relu'),
-    layers.Dense(1, activation='sigmoid')]) # change this to modify the number of layers
+popoulate_samples(pos_validation_set_size, neg_validation_set_size, validation_samples, validation_labels)
+assert len(validation_samples) == int(pos_validation_set_size + neg_validation_set_size)
+
+layer_list = []
+for _ in range(0, layer_count):
+    layer_list.append(layers.Dense(neuron_count, activation='relu'))
+
+layer_list.append(layers.Dense(1, activation='sigmoid'))
+
+game_model = tf.keras.Sequential(layer_list)
 game_model.compile(loss='binary_crossentropy', optimizer = tf.optimizers.Adam(), metrics=['accuracy'])
 
-game_model.fit(training_samples, training_labels, epochs=250, validation_data=(validation_samples, validation_labels))
-save_model(game_model, 'model')
+game_model.fit(training_samples, training_labels, epochs=150, validation_data=(validation_samples, validation_labels))
+save_model(game_model, model_name)
