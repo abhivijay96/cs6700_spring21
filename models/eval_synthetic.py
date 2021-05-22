@@ -14,7 +14,7 @@ with open(pkl_file, 'rb') as f:
     examples = pickle.load(f)
     print('Loaded examples')
     random.shuffle(examples)
-    sample = examples[: 100000]
+    sample = examples[: 10000]
     # print(sample[0])
     print(model.evaluate(sample, [0 for _ in range(len(sample))]))
 

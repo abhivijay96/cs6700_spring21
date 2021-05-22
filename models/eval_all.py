@@ -52,4 +52,15 @@ def run_nnet(positive_size, negative_size, neurons, layers):
 ## varying just positive sizes
 for size in positive_sizes:
     run_nnet(size, negative_size_default, neuron_count_default, layer_count_default)
-    break
+
+## varying negative sizes
+for size in negative_sizes:
+    run_nnet(positive_size_default, size, neuron_count_default, layer_count_default)
+
+## varying number of layers
+for layer_count in layer_counts:
+    run_nnet(positive_size_default, negative_size_default, neuron_count_default, layer_count)
+
+## varying number of neurons
+for neuron_count in neuron_counts:
+    run_nnet(positive_size_default, negative_size_default, neuron_count, layer_count_default)
