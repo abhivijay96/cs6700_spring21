@@ -11,7 +11,7 @@ tf.random.set_seed(1996)
 if len(sys.argv) < 5:
     print('Invalid argument count', len(sys.argv))
     exit(0)
-
+print(sys.argv)
 fraction_positive_data = float(sys.argv[1])
 fractin_negative_data = float(sys.argv[2])
 neuron_count = int(sys.argv[3])
@@ -63,6 +63,8 @@ def populate_data_points(file_name, target):
 def popoulate_samples(positive_size, negative_size, samples, labels):
     global negative_idx
     global positive_idx
+    positive_size = int(positive_size)
+    negative_size = int(negative_size)
 
     for _ in range(0, positive_size):
         labels.append(positive_label)
@@ -132,7 +134,7 @@ print('Negative train set size:', negative_size)
 training_set_size = positive_size + negative_size
 print('Training set size: ', training_set_size)
 popoulate_samples(positive_size, negative_size, training_samples, training_labels)
-assert len(training_samples) == int(training_set_size)
+assert len(training_samples) == int(positive_size) + int(negative_size)
 
 validation_set_size = training_set_size / 10
 pos_validation_set_size = validation_set_size / 2
@@ -142,7 +144,7 @@ print('Positive val set size:', pos_validation_set_size)
 print('Negative val set size:', neg_validation_set_size)
 
 popoulate_samples(pos_validation_set_size, neg_validation_set_size, validation_samples, validation_labels)
-assert len(validation_samples) == int(pos_validation_set_size + neg_validation_set_size)
+assert len(validation_samples) == int(pos_validation_set_size) + int(neg_validation_set_size)
 
 layer_list = []
 for _ in range(0, layer_count):

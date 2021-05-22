@@ -28,14 +28,15 @@ def run_nnet(positive_size, negative_size, neurons, layers):
     for idx in range(len(name_list)):
         name_list[idx] = str(name_list[idx])
     model_name = '_'.join(name_list)
+    model_name = model_name.replace('.', 'dot')
     log_file_name = model_name + '.log'
     err_file_name = model_name + '_err.log'
 
     print('Running model:', model_name)
     # train and validate
-    result = subprocess.run(['python3', 'supervised_nn.py', positive_size, negative_size, neurons, layers], capture_output=True)
-    write_to_file(log_file_name, result.stdout)
-    write_to_file(err_file_name, result.stderr)
+    result = subprocess.run(['python3', 'supervised_nn.py', str(positive_size), str(negative_size), str(neurons), str(layers), model_name], capture_output=True)
+    write_to_file(log_file_name, result.stdout.decode())
+    write_to_file(err_file_name, result.stderr.decode())
 
     # synthetic validate
     for pkl_file in pkl_files:
@@ -44,7 +45,9 @@ def run_nnet(positive_size, negative_size, neurons, layers):
         log_file_name = log_file_name_prefix + '.log'
         err_file_name = log_file_name_prefix + '_err.log'
         print('Running eval', log_file_name_prefix)
-        result = subprocess.run(['python3', 'eval_synthetic.py', model_name, pkl_file])
+        result = subprocess.run(['python3', 'eval_synthetic.py', model_name, pkl_file], capture_output=True)
+        write_to_file(log_file_name, result.stdout.decode())
+        write_to_file(err_file_name, result.stderr.decode())
 
 ## varying just positive sizes
 for size in positive_sizes:
