@@ -77,6 +77,7 @@ def popoulate_samples(positive_size, negative_size, samples, labels):
         if label == positive_label:
             samples.append(positive_examples[positive_idx])
             positive_idx += 1
+            positive_idx = positive_idx % len(positive_examples)
         if label == negative_label:
             samples.append(neagative_examples[negative_idx])
             negative_idx += 1
