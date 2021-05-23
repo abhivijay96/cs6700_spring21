@@ -128,6 +128,9 @@ random.shuffle(neagative_examples)
 
 positive_size = fraction_positive_data * len(positive_examples)
 negative_size = fraction_positive_data * len(positive_examples)
+if positive_size == len(positive_examples):
+    positive_size -= 1
+
 print('Positive train set size:', positive_size)
 print('Negative train set size:', negative_size)
 
