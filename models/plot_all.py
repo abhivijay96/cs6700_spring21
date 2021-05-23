@@ -5,7 +5,7 @@ negative_size_default = 0.5
 layer_count_default = 1
 neuron_count_default = 18
 
-positive_sizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+positive_sizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 negative_sizes = [0.25, 0.5, 0.75]
 layer_counts = [1, 2, 3]
 neuron_counts = []
