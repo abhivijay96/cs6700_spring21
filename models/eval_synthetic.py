@@ -18,7 +18,7 @@ with open(pkl_file, 'rb') as f:
     if 'overwrite' in pkl_file:
         sample = examples[: 100000]
     # print(sample[0])
-    print(model.evaluate(sample, [0 for _ in range(len(sample))]))
+    print(model.evaluate(sample, [0 for _ in range(len(sample))], batch_size=128))
 
 
 
