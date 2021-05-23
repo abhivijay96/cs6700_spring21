@@ -11,7 +11,7 @@ layer_count_default = 1
 neuron_count_default = 18
 
 positive_sizes = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-negative_sizes = [0.25, 0.5, 0.75]
+negative_sizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 layer_counts = [1, 2, 3]
 pkl_files = ['../dataset/many_moves.pkl', '../dataset/overwrite.pkl', '../dataset/wrong_symbol.pkl']
 neuron_counts = []
@@ -50,17 +50,17 @@ def run_nnet(positive_size, negative_size, neurons, layers):
         write_to_file(err_file_name, result.stderr.decode())
 
 ## varying just positive sizes
-for size in positive_sizes:
-    run_nnet(size, negative_size_default, neuron_count_default, layer_count_default)
+# for size in positive_sizes:
+#     run_nnet(size, negative_size_default, neuron_count_default, layer_count_default)
 
 ## varying negative sizes
 for size in negative_sizes:
     run_nnet(positive_size_default, size, neuron_count_default, layer_count_default)
 
 ## varying number of layers
-for layer_count in layer_counts:
-    run_nnet(positive_size_default, negative_size_default, neuron_count_default, layer_count)
+# for layer_count in layer_counts:
+#     run_nnet(positive_size_default, negative_size_default, neuron_count_default, layer_count)
 
 ## varying number of neurons
-for neuron_count in neuron_counts:
-    run_nnet(positive_size_default, negative_size_default, neuron_count, layer_count_default)
+# for neuron_count in neuron_counts:
+#     run_nnet(positive_size_default, negative_size_default, neuron_count, layer_count_default)
