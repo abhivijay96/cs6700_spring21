@@ -17,7 +17,7 @@ pkl_files = ['many_moves.pkl', 'overwrite.pkl', 'wrong_symbol.pkl']
 
 def get_lines(file_name):
     lines = None
-    with open(file_name, 'r') as log_file:
+    with open('./logs/' + file_name, 'r') as log_file:
         lines = log_file.readlines()
     return lines
 
@@ -52,12 +52,12 @@ def plot_log(positive_size, negative_size, neurons, layers, y_val, ys):
 
 
 
-def print_tsv(val_lists, headers):
+def print_tsv(val_lists, headers, file_name):
     result = {}
     for idx in range(len(headers)):
         result[headers[idx]] = val_lists[idx]
     df = pd.DataFrame(result)
-    df.to_csv('test.tsv', sep='\t', index=False) 
+    df.to_csv(file_name, sep='\t', index=False) 
 
 
 # xs = [0.1]
@@ -78,16 +78,37 @@ for size in positive_sizes:
     xs.append(float(size))
     plot_log(size, negative_size_default, neuron_count_default, layer_count_default, y_vals, [y_many, y_overwrite, y_wrong])
 
-print_tsv([xs, y_vals, y_many, y_overwrite,y_wrong], ['Positive fraction', 'Val accuracy', 'Many accuracy', 'Overwrite accuracy', 'Wrong accuracy'])
+print_tsv([xs, y_vals, y_many, y_overwrite,y_wrong], ['Positive fraction', 'Val accuracy', 'Many accuracy', 'Overwrite accuracy', 'Wrong accuracy'], 'positive_fraction.tsv')
 
-# ## varying negative sizes
-# for size in negative_sizes:
-#     plot_log(positive_size_default, size, neuron_count_default, layer_count_default)
+xs = []
+y_vals = []
+y_many = []
+y_overwrite = []
+y_wrong = []
+## varying negative sizes
+for size in negative_sizes:
+    xs.append(float(size))
+    plot_log(positive_size_default, size, neuron_count_default, layer_count_default, y_vals, [y_many, y_overwrite, y_wrong])
+print_tsv([xs, y_vals, y_many, y_overwrite,y_wrong], ['Negative fraction', 'Val accuracy', 'Many accuracy', 'Overwrite accuracy', 'Wrong accuracy'], 'negative_fraction.tsv')
 
-# ## varying number of layers
-# for layer_count in layer_counts:
-#     plot_log(positive_size_default, negative_size_default, neuron_count_default, layer_count)
+xs = []
+y_vals = []
+y_many = []
+y_overwrite = []
+y_wrong = []
+## varying number of layers
+for layer_count in layer_counts:
+    xs.append(layer_count)
+    plot_log(positive_size_default, negative_size_default, neuron_count_default, layer_count, y_vals, [y_many, y_overwrite, y_wrong])
+print_tsv([xs, y_vals, y_many, y_overwrite,y_wrong], ['Layers', 'Val accuracy', 'Many accuracy', 'Overwrite accuracy', 'Wrong accuracy'], 'layers.tsv')
 
-# ## varying number of neurons
-# for neuron_count in neuron_counts:
-#     plot_log(positive_size_default, negative_size_default, neuron_count, layer_count_default)
+xs = []
+y_vals = []
+y_many = []
+y_overwrite = []
+y_wrong = []
+## varying number of neurons
+for neuron_count in neuron_counts:
+    xs.append(neuron_count)
+    plot_log(positive_size_default, negative_size_default, neuron_count, layer_count_default, y_vals, [y_many, y_overwrite, y_wrong])
+print_tsv([xs, y_vals, y_many, y_overwrite,y_wrong], ['Neurons', 'Val accuracy', 'Many accuracy', 'Overwrite accuracy', 'Wrong accuracy'], 'neuron.tsv')
